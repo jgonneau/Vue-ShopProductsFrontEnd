@@ -3,3 +3,9 @@ export type ApiError = {
   message: string
   details?: unknown
 }
+
+export type SchemaHealth = {
+  keys: string[]
+  title?: string
+  version?: string
+}
