@@ -7,11 +7,17 @@
     "dev": "vite",
     "typecheck": "vue-tsc -b",
     "lint": "eslint . --max-warnings=0",
+    "precommit": "lint-staged",
     "test": "vitest",
     "test:run": "vitest run",
     "ci": "npm run lint && npm run typecheck && npm run test:run",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,vue,mjs,cjs}": "eslint --max-warnings=0",
+    "*.{js,jsx,ts,tsx,vue,json,css,scss,md,html,yml,yaml}": "prettier --write"
   },
   "dependencies": {
     "@tanstack/vue-query": "^5.100.9",
@@ -35,7 +41,9 @@
     "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^10.9.0",
+    "husky": "^9.1.7",
     "jsdom": "^29.1.1",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.8.3",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",

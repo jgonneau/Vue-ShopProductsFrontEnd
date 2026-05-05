@@ -1,7 +1,3 @@
-## Summary
-
-<!-- What changed and why? Keep this focused on behavior and intent. -->
-
 ## Type of change
 
 - [ ] feat (new functionality)
