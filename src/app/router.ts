@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../modules/auth/stores/auth-store'
 import HomePage from '../modules/public-catalog/pages/HomePage.vue'
+import ProductListPage from '../modules/public-catalog/pages/ProductListPage.vue'
+import ProductDetailPage from '../modules/public-catalog/pages/ProductDetailPage.vue'
+import StoreListPage from '../modules/public-catalog/pages/StoreListPage.vue'
+import StoreDetailPage from '../modules/public-catalog/pages/StoreDetailPage.vue'
 import LoginPage from '../modules/auth/pages/LoginPage.vue'
 import RegisterPage from '../modules/auth/pages/RegisterPage.vue'
 import ProfilePage from '../modules/auth/pages/ProfilePage.vue'
@@ -14,6 +18,26 @@ export const router = createRouter({
       path: '/',
       name: 'home',
       component: HomePage,
+    },
+    {
+      path: '/products',
+      name: 'products',
+      component: ProductListPage,
+    },
+    {
+      path: '/products/:id',
+      name: 'product-detail',
+      component: ProductDetailPage,
+    },
+    {
+      path: '/stores',
+      name: 'stores',
+      component: StoreListPage,
+    },
+    {
+      path: '/stores/:id',
+      name: 'store-detail',
+      component: StoreDetailPage,
     },
     {
       path: '/login',

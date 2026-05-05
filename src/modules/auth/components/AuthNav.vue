@@ -17,6 +17,8 @@ const handleLogout = async () => {
 <template>
   <nav class="auth-nav">
     <RouterLink to="/">Home</RouterLink>
+    <RouterLink to="/products">Products</RouterLink>
+    <RouterLink to="/stores">Stores</RouterLink>
 
     <template v-if="auth.isAuthenticated">
       <RouterLink to="/profile">Profile</RouterLink>
