@@ -1,5 +1,26 @@
-# Vue 3 + TypeScript + Vite
+# Frontend DAE
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Vue 3 + TypeScript + Vite frontend.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+## Docker
+
+Build the image:
+
+```bash
+docker build -t frontend-dae --build-arg VITE_API_BASE_URL=http://localhost:8000 .
+```
+
+Run the container:
+
+```bash
+docker run --rm -p 8080:80 frontend-dae
+```
+
+The app will be available at `http://localhost:8080`.
