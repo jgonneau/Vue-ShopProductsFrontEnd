@@ -156,6 +156,15 @@ body {
   font-weight: 600;
 }
 
+.catalog-card button {
+  margin-top: 0.5rem;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+}
+
 .toolbar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -241,4 +250,9 @@ body {
 
 .danger-panel {
   border-color: #fca5a5;
+}
+
+.form input[type='checkbox'] {
+  width: auto;
+  margin-right: 0.4rem;
 }
