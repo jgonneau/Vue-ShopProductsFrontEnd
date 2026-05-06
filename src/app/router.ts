@@ -1,18 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../modules/auth/stores/auth-store'
-import HomePage from '../modules/public-catalog/pages/HomePage.vue'
-import ProductListPage from '../modules/public-catalog/pages/ProductListPage.vue'
-import ProductDetailPage from '../modules/public-catalog/pages/ProductDetailPage.vue'
-import StoreListPage from '../modules/public-catalog/pages/StoreListPage.vue'
-import StoreDetailPage from '../modules/public-catalog/pages/StoreDetailPage.vue'
-import LoginPage from '../modules/auth/pages/LoginPage.vue'
-import RegisterPage from '../modules/auth/pages/RegisterPage.vue'
-import ProfilePage from '../modules/auth/pages/ProfilePage.vue'
-import AdminDashboardPage from '../modules/auth/pages/AdminDashboardPage.vue'
-import VendorDashboardPage from '../modules/auth/pages/VendorDashboardPage.vue'
-import CustomerOrdersPage from '../modules/customer/pages/CustomerOrdersPage.vue'
-import CustomerInvoicesPage from '../modules/customer/pages/CustomerInvoicesPage.vue'
-import AccountSecurityPage from '../modules/customer/pages/AccountSecurityPage.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -20,32 +7,32 @@ export const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomePage,
+      component: () => import('../modules/public-catalog/pages/HomePage.vue'),
     },
     {
       path: '/products',
       name: 'products',
-      component: ProductListPage,
+      component: () => import('../modules/public-catalog/pages/ProductListPage.vue'),
     },
     {
       path: '/products/:id',
       name: 'product-detail',
-      component: ProductDetailPage,
+      component: () => import('../modules/public-catalog/pages/ProductDetailPage.vue'),
     },
     {
       path: '/stores',
       name: 'stores',
-      component: StoreListPage,
+      component: () => import('../modules/public-catalog/pages/StoreListPage.vue'),
     },
     {
       path: '/stores/:id',
       name: 'store-detail',
-      component: StoreDetailPage,
+      component: () => import('../modules/public-catalog/pages/StoreDetailPage.vue'),
     },
     {
       path: '/login',
       name: 'login',
-      component: LoginPage,
+      component: () => import('../modules/auth/pages/LoginPage.vue'),
       meta: {
         guestOnly: true,
       },
@@ -53,7 +40,7 @@ export const router = createRouter({
     {
       path: '/register',
       name: 'register',
-      component: RegisterPage,
+      component: () => import('../modules/auth/pages/RegisterPage.vue'),
       meta: {
         guestOnly: true,
       },
@@ -61,7 +48,7 @@ export const router = createRouter({
     {
       path: '/profile',
       name: 'profile',
-      component: ProfilePage,
+      component: () => import('../modules/auth/pages/ProfilePage.vue'),
       meta: {
         requiresAuth: true,
       },
@@ -69,7 +56,7 @@ export const router = createRouter({
     {
       path: '/account/orders',
       name: 'customer-orders',
-      component: CustomerOrdersPage,
+      component: () => import('../modules/customer/pages/CustomerOrdersPage.vue'),
       meta: {
         requiresAuth: true,
       },
@@ -77,7 +64,7 @@ export const router = createRouter({
     {
       path: '/account/invoices',
       name: 'customer-invoices',
-      component: CustomerInvoicesPage,
+      component: () => import('../modules/customer/pages/CustomerInvoicesPage.vue'),
       meta: {
         requiresAuth: true,
       },
@@ -85,7 +72,7 @@ export const router = createRouter({
     {
       path: '/account/security',
       name: 'account-security',
-      component: AccountSecurityPage,
+      component: () => import('../modules/customer/pages/AccountSecurityPage.vue'),
       meta: {
         requiresAuth: true,
       },
@@ -93,7 +80,7 @@ export const router = createRouter({
     {
       path: '/admin',
       name: 'admin-dashboard',
-      component: AdminDashboardPage,
+      component: () => import('../modules/auth/pages/AdminDashboardPage.vue'),
       meta: {
         requiresAuth: true,
         roles: ['admin'],
@@ -102,7 +89,7 @@ export const router = createRouter({
     {
       path: '/vendor',
       name: 'vendor-dashboard',
-      component: VendorDashboardPage,
+      component: () => import('../modules/auth/pages/VendorDashboardPage.vue'),
       meta: {
         requiresAuth: true,
         roles: ['vendor', 'admin'],

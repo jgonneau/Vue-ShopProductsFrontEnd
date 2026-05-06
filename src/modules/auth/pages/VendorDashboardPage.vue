@@ -3,6 +3,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { normalizeApiError } from '../../../shared/api/errors'
 import PaginationControls from '../../../shared/ui/PaginationControls.vue'
+import { useToastBus } from '../../../shared/ui/toast-bus'
 import AuthNav from '../components/AuthNav.vue'
 import { useCreateProductForStore } from '../../vendor/composables/useCreateProductForStore'
 import { useOwnedProducts, useOwnedStoreProducts } from '../../vendor/composables/useOwnedProducts'
@@ -10,6 +11,7 @@ import { useCreateOwnedStore, useOwnedStores } from '../../vendor/composables/us
 
 const route = useRoute()
 const router = useRouter()
+const { pushToast } = useToastBus()
 
 const storesPage = computed(() => {
   const rawPage = Number(route.query.storesPage ?? 1)
@@ -104,8 +106,10 @@ const onCreateStore = async () => {
     storeForm.city = ''
     storeForm.country = ''
     storeSuccess.value = 'Store created successfully.'
+    pushToast(storeSuccess.value, 'success')
   } catch (error) {
     storeError.value = normalizeApiError(error).message
+    pushToast(storeError.value, 'error')
   }
 }
 
@@ -142,8 +146,10 @@ const onCreateProduct = async () => {
     productForm.stock_quantity = 0
     productForm.activated = true
     productSuccess.value = 'Product created successfully.'
+    pushToast(productSuccess.value, 'success')
   } catch (error) {
     productError.value = normalizeApiError(error).message
+    pushToast(productError.value, 'error')
   }
 }
 </script>
