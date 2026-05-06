@@ -21,7 +21,11 @@ describe('useStoreProducts', () => {
 
     const storeId = ref('store-1')
     const page = ref(4)
-    const options = useStoreProducts(storeId, page)
+    const options = useStoreProducts(storeId, page) as unknown as {
+      queryKey: { value: unknown[] }
+      enabled: { value: boolean }
+      queryFn: () => Promise<unknown>
+    }
 
     expect(options.queryKey.value).toEqual(['store-products', 'store-1', 4])
     expect(options.enabled.value).toBe(true)
@@ -34,7 +38,9 @@ describe('useStoreProducts', () => {
 
     const storeId = ref('')
     const page = ref(1)
-    const options = useStoreProducts(storeId, page)
+    const options = useStoreProducts(storeId, page) as unknown as {
+      enabled: { value: boolean }
+    }
 
     expect(options.enabled.value).toBe(false)
   })

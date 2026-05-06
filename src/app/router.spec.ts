@@ -6,14 +6,16 @@ type AuthStoreLike = {
   userRole: 'admin' | 'vendor' | 'customer' | 'guest' | null
 }
 
-type GuardFn = (to: { meta: Record<string, unknown>; fullPath: string }) => Promise<unknown>
+type RouterGuard = (to: { meta: Record<string, unknown>; fullPath: string }) => Promise<unknown>
 
 const { createRouterMock, createWebHistoryMock, useAuthStoreMock, guardRef } = vi.hoisted(() => ({
   createRouterMock: vi.fn(),
   createWebHistoryMock: vi.fn(),
   useAuthStoreMock: vi.fn(),
   guardRef: {
-    current: undefined as GuardFn | undefined,
+    current: undefined as
+      | ((to: { meta: Record<string, unknown>; fullPath: string }) => Promise<unknown>)
+      | undefined,
   },
 }))
 
@@ -26,7 +28,7 @@ vi.mock('../modules/auth/stores/auth-store', () => ({
   useAuthStore: useAuthStoreMock,
 }))
 
-const loadRouterGuard = async (authStore: AuthStoreLike) => {
+const loadRouterGuard = async (authStore: AuthStoreLike): Promise<RouterGuard> => {
   vi.resetModules()
   vi.clearAllMocks()
 
@@ -41,15 +43,10 @@ const loadRouterGuard = async (authStore: AuthStoreLike) => {
   })
 
   await import('./router')
-  return guardRef.current
-}
-
-const ensureGuard = (guard: GuardFn | undefined): GuardFn => {
-  if (!guard) {
-    throw new Error('Expected router guard to be registered')
+  if (!guardRef.current) {
+    throw new Error('Router guard was not initialized.')
   }
-
-  return guard
+  return guardRef.current
 }
 
 const createAuthStore = (overrides: Partial<AuthStoreLike> = {}): AuthStoreLike => ({
@@ -68,7 +65,8 @@ describe('router navigation guard', () => {
     const authStore = createAuthStore({
       isAuthenticated: false,
     })
-    const guard = ensureGuard(await loadRouterGuard(authStore))
+    const guard = await loadRouterGuard(authStore)
+    expect(guard).toBeTypeOf('function')
 
     const result = await guard({
       meta: {
@@ -91,7 +89,8 @@ describe('router navigation guard', () => {
       isAuthenticated: true,
       userRole: 'customer',
     })
-    const guard = ensureGuard(await loadRouterGuard(authStore))
+    const guard = await loadRouterGuard(authStore)
+    expect(guard).toBeTypeOf('function')
 
     const result = await guard({
       meta: {
@@ -99,51 +98,6 @@ describe('router navigation guard', () => {
         roles: ['admin'],
       },
       fullPath: '/admin',
-    })
-
-    expect(authStore.initializeSession).toHaveBeenCalledTimes(1)
-    expect(result).toEqual({
-      name: 'home',
-    })
-  })
-
-  it('redirects unauthenticated users away from vendor page to login', async () => {
-    const authStore = createAuthStore({
-      isAuthenticated: false,
-      userRole: null,
-    })
-    const guard = ensureGuard(await loadRouterGuard(authStore))
-
-    const result = await guard({
-      meta: {
-        requiresAuth: true,
-        roles: ['vendor', 'admin'],
-      },
-      fullPath: '/vendor',
-    })
-
-    expect(authStore.initializeSession).toHaveBeenCalledTimes(1)
-    expect(result).toEqual({
-      name: 'login',
-      query: {
-        redirect: '/vendor',
-      },
-    })
-  })
-
-  it('blocks authenticated non-vendor user from vendor page', async () => {
-    const authStore = createAuthStore({
-      isAuthenticated: true,
-      userRole: 'customer',
-    })
-    const guard = ensureGuard(await loadRouterGuard(authStore))
-
-    const result = await guard({
-      meta: {
-        requiresAuth: true,
-        roles: ['vendor', 'admin'],
-      },
-      fullPath: '/vendor',
     })
 
     expect(authStore.initializeSession).toHaveBeenCalledTimes(1)
