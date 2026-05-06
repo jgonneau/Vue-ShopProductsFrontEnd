@@ -6,14 +6,14 @@ type AuthStoreLike = {
   userRole: 'admin' | 'vendor' | 'customer' | 'guest' | null
 }
 
+type GuardFn = (to: { meta: Record<string, unknown>; fullPath: string }) => Promise<unknown>
+
 const { createRouterMock, createWebHistoryMock, useAuthStoreMock, guardRef } = vi.hoisted(() => ({
   createRouterMock: vi.fn(),
   createWebHistoryMock: vi.fn(),
   useAuthStoreMock: vi.fn(),
   guardRef: {
-    current: undefined as
-      | ((to: { meta: Record<string, unknown>; fullPath: string }) => Promise<unknown>)
-      | undefined,
+    current: undefined as GuardFn | undefined,
   },
 }))
 
@@ -44,6 +44,14 @@ const loadRouterGuard = async (authStore: AuthStoreLike) => {
   return guardRef.current
 }
 
+const ensureGuard = (guard: GuardFn | undefined): GuardFn => {
+  if (!guard) {
+    throw new Error('Expected router guard to be registered')
+  }
+
+  return guard
+}
+
 const createAuthStore = (overrides: Partial<AuthStoreLike> = {}): AuthStoreLike => ({
   initializeSession: vi.fn().mockResolvedValue(undefined),
   isAuthenticated: false,
@@ -60,9 +68,9 @@ describe('router navigation guard', () => {
     const authStore = createAuthStore({
       isAuthenticated: false,
     })
-    const guard = await loadRouterGuard(authStore)
+    const guard = ensureGuard(await loadRouterGuard(authStore))
 
-    const result = await guard?.({
+    const result = await guard({
       meta: {
         requiresAuth: true,
       },
@@ -83,14 +91,59 @@ describe('router navigation guard', () => {
       isAuthenticated: true,
       userRole: 'customer',
     })
-    const guard = await loadRouterGuard(authStore)
+    const guard = ensureGuard(await loadRouterGuard(authStore))
 
-    const result = await guard?.({
+    const result = await guard({
       meta: {
         requiresAuth: true,
         roles: ['admin'],
       },
       fullPath: '/admin',
+    })
+
+    expect(authStore.initializeSession).toHaveBeenCalledTimes(1)
+    expect(result).toEqual({
+      name: 'home',
+    })
+  })
+
+  it('redirects unauthenticated users away from vendor page to login', async () => {
+    const authStore = createAuthStore({
+      isAuthenticated: false,
+      userRole: null,
+    })
+    const guard = ensureGuard(await loadRouterGuard(authStore))
+
+    const result = await guard({
+      meta: {
+        requiresAuth: true,
+        roles: ['vendor', 'admin'],
+      },
+      fullPath: '/vendor',
+    })
+
+    expect(authStore.initializeSession).toHaveBeenCalledTimes(1)
+    expect(result).toEqual({
+      name: 'login',
+      query: {
+        redirect: '/vendor',
+      },
+    })
+  })
+
+  it('blocks authenticated non-vendor user from vendor page', async () => {
+    const authStore = createAuthStore({
+      isAuthenticated: true,
+      userRole: 'customer',
+    })
+    const guard = ensureGuard(await loadRouterGuard(authStore))
+
+    const result = await guard({
+      meta: {
+        requiresAuth: true,
+        roles: ['vendor', 'admin'],
+      },
+      fullPath: '/vendor',
     })
 
     expect(authStore.initializeSession).toHaveBeenCalledTimes(1)
