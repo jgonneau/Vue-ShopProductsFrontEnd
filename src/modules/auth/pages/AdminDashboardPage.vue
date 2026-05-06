@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { normalizeApiError } from '../../../shared/api/errors'
 import PaginationControls from '../../../shared/ui/PaginationControls.vue'
 import StatusBadge from '../../../shared/ui/StatusBadge.vue'
+import { useToastBus } from '../../../shared/ui/toast-bus'
 import {
   useActivateAdminProduct,
   useAdminInvoices,
@@ -35,6 +36,7 @@ import AuthNav from '../components/AuthNav.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { pushToast } = useToastBus()
 
 const usersPage = computed(() => Number(route.query.usersPage ?? 1))
 const storesPage = computed(() => Number(route.query.storesPage ?? 1))
@@ -187,8 +189,11 @@ const withFeedback = async (action: () => Promise<unknown>, successMessage: stri
   try {
     await action()
     feedbackMessage.value = successMessage
+    pushToast(successMessage, 'success')
   } catch (error) {
-    feedbackError.value = normalizeApiError(error).message
+    const message = normalizeApiError(error).message
+    feedbackError.value = message
+    pushToast(message, 'error')
   }
 }
 
@@ -425,6 +430,8 @@ const onClearLogsBySeverity = async () => {
         <button type="submit" :disabled="deleteUserMutation.isPending.value">Delete user</button>
       </form>
 
+      <p v-if="usersQuery.isPending.value">Loading users...</p>
+      <p v-else-if="usersQuery.isError.value" class="error">Unable to load users.</p>
       <ul v-if="(usersQuery.data.value?.results.length ?? 0) > 0" class="catalog-grid">
         <li
           v-for="user in usersQuery.data.value?.results ?? []"
@@ -438,6 +445,7 @@ const onClearLogsBySeverity = async () => {
           <p><strong>Staff:</strong> {{ user.is_staff ? 'Yes' : 'No' }}</p>
         </li>
       </ul>
+      <p v-else-if="!usersQuery.isPending.value && !usersQuery.isError.value">No users found.</p>
       <PaginationControls
         :page="usersPage"
         :has-previous="Boolean(usersQuery.data.value?.previous)"
@@ -481,6 +489,8 @@ const onClearLogsBySeverity = async () => {
         <button type="submit" :disabled="deleteStoreMutation.isPending.value">Delete store</button>
       </form>
 
+      <p v-if="storesQuery.isPending.value">Loading stores...</p>
+      <p v-else-if="storesQuery.isError.value" class="error">Unable to load stores.</p>
       <ul v-if="(storesQuery.data.value?.results.length ?? 0) > 0" class="catalog-grid">
         <li
           v-for="store in storesQuery.data.value?.results ?? []"
@@ -493,6 +503,7 @@ const onClearLogsBySeverity = async () => {
           <p><strong>City:</strong> {{ store.city || '-' }}</p>
         </li>
       </ul>
+      <p v-else-if="!storesQuery.isPending.value && !storesQuery.isError.value">No stores found.</p>
       <PaginationControls
         :page="storesPage"
         :has-previous="Boolean(storesQuery.data.value?.previous)"
@@ -569,6 +580,8 @@ const onClearLogsBySeverity = async () => {
         </button>
       </form>
 
+      <p v-if="productsQuery.isPending.value">Loading products...</p>
+      <p v-else-if="productsQuery.isError.value" class="error">Unable to load products.</p>
       <ul v-if="(productsQuery.data.value?.results.length ?? 0) > 0" class="catalog-grid">
         <li
           v-for="product in productsQuery.data.value?.results ?? []"
@@ -583,6 +596,9 @@ const onClearLogsBySeverity = async () => {
           <p><strong>Active:</strong> {{ product.activated ? 'Yes' : 'No' }}</p>
         </li>
       </ul>
+      <p v-else-if="!productsQuery.isPending.value && !productsQuery.isError.value">
+        No products found.
+      </p>
       <PaginationControls
         :page="productsPage"
         :has-previous="Boolean(productsQuery.data.value?.previous)"
@@ -678,6 +694,8 @@ const onClearLogsBySeverity = async () => {
         <button type="submit" :disabled="deleteOrderMutation.isPending.value">Delete order</button>
       </form>
 
+      <p v-if="ordersQuery.isPending.value">Loading orders...</p>
+      <p v-else-if="ordersQuery.isError.value" class="error">Unable to load orders.</p>
       <ul v-if="(ordersQuery.data.value?.results.length ?? 0) > 0" class="catalog-grid">
         <li
           v-for="order in ordersQuery.data.value?.results ?? []"
@@ -695,6 +713,7 @@ const onClearLogsBySeverity = async () => {
           </p>
         </li>
       </ul>
+      <p v-else-if="!ordersQuery.isPending.value && !ordersQuery.isError.value">No orders found.</p>
       <PaginationControls
         :page="ordersPage"
         :has-previous="Boolean(ordersQuery.data.value?.previous)"
@@ -768,6 +787,8 @@ const onClearLogsBySeverity = async () => {
         </button>
       </form>
 
+      <p v-if="invoicesQuery.isPending.value">Loading invoices...</p>
+      <p v-else-if="invoicesQuery.isError.value" class="error">Unable to load invoices.</p>
       <ul v-if="(invoicesQuery.data.value?.results.length ?? 0) > 0" class="catalog-grid">
         <li
           v-for="invoice in invoicesQuery.data.value?.results ?? []"
@@ -785,6 +806,9 @@ const onClearLogsBySeverity = async () => {
           </p>
         </li>
       </ul>
+      <p v-else-if="!invoicesQuery.isPending.value && !invoicesQuery.isError.value">
+        No invoices found.
+      </p>
       <PaginationControls
         :page="invoicesPage"
         :has-previous="Boolean(invoicesQuery.data.value?.previous)"
@@ -799,6 +823,8 @@ const onClearLogsBySeverity = async () => {
 
       <section class="panel">
         <h3>Log stats</h3>
+        <p v-if="logStatsQuery.isPending.value">Loading log statistics...</p>
+        <p v-else-if="logStatsQuery.isError.value" class="error">Unable to load log statistics.</p>
         <p><strong>Total logs:</strong> {{ logStatsQuery.data.value?.total ?? 0 }}</p>
         <p>
           <strong>By severity:</strong>
@@ -852,6 +878,8 @@ const onClearLogsBySeverity = async () => {
         </button>
       </form>
 
+      <p v-if="logsQuery.isPending.value">Loading logs...</p>
+      <p v-else-if="logsQuery.isError.value" class="error">Unable to load logs.</p>
       <ul v-if="(logsQuery.data.value?.results.length ?? 0) > 0" class="catalog-grid">
         <li v-for="log in logsQuery.data.value?.results ?? []" :key="log.id" class="catalog-card">
           <h3>{{ log.id }}</h3>
@@ -863,6 +891,7 @@ const onClearLogsBySeverity = async () => {
           <p><strong>Created:</strong> {{ log.created_at }}</p>
         </li>
       </ul>
+      <p v-else-if="!logsQuery.isPending.value && !logsQuery.isError.value">No logs found.</p>
       <PaginationControls
         :page="logsPage"
         :has-previous="Boolean(logsQuery.data.value?.previous)"

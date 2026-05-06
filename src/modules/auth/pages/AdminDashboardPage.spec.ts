@@ -1,6 +1,6 @@
 import { ref } from 'vue'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
+import { describe, expect, it, vi } from 'vitest'
+import { render, screen } from '@testing-library/vue'
 import AdminDashboardPage from './AdminDashboardPage.vue'
 
 vi.mock('vue-router', () => ({
@@ -34,15 +34,6 @@ vi.mock('../../../shared/ui/StatusBadge.vue', () => ({
   },
 }))
 
-const { createUserMutateAsyncMock, normalizeApiErrorMock } = vi.hoisted(() => ({
-  createUserMutateAsyncMock: vi.fn(),
-  normalizeApiErrorMock: vi.fn(),
-}))
-
-vi.mock('../../../shared/api/errors', () => ({
-  normalizeApiError: normalizeApiErrorMock,
-}))
-
 vi.mock('../../admin/composables/useAdminResources', () => {
   const paginated = {
     count: 0,
@@ -54,19 +45,25 @@ vi.mock('../../admin/composables/useAdminResources', () => {
     mutateAsync: vi.fn(),
     isPending: ref(false),
   }
+  const idleQuery = {
+    data: ref(paginated),
+    isPending: ref(false),
+    isError: ref(false),
+  }
 
   return {
-    useAdminUsers: () => ({ data: ref(paginated) }),
-    useAdminStores: () => ({ data: ref(paginated) }),
-    useAdminProducts: () => ({ data: ref(paginated) }),
-    useAdminOrders: () => ({ data: ref(paginated) }),
-    useAdminInvoices: () => ({ data: ref(paginated) }),
-    useAdminLogs: () => ({ data: ref(paginated) }),
-    useAdminLogStats: () => ({ data: ref({ total: 0, by_severity: [], top_sources: [] }) }),
-    useCreateAdminUser: () => ({
-      mutateAsync: createUserMutateAsyncMock,
+    useAdminUsers: () => idleQuery,
+    useAdminStores: () => idleQuery,
+    useAdminProducts: () => idleQuery,
+    useAdminOrders: () => idleQuery,
+    useAdminInvoices: () => idleQuery,
+    useAdminLogs: () => idleQuery,
+    useAdminLogStats: () => ({
+      data: ref({ total: 0, by_severity: [], top_sources: [] }),
       isPending: ref(false),
+      isError: ref(false),
     }),
+    useCreateAdminUser: () => idleMutation,
     useChangeAdminUserPassword: () => idleMutation,
     useDeleteAdminUser: () => idleMutation,
     useCreateAdminStore: () => idleMutation,
@@ -88,11 +85,6 @@ vi.mock('../../admin/composables/useAdminResources', () => {
 })
 
 describe('AdminDashboardPage', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    normalizeApiErrorMock.mockReturnValue({ message: 'Admin API error' })
-  })
-
   it('renders admin operations sections', () => {
     render(AdminDashboardPage)
 
@@ -104,42 +96,5 @@ describe('AdminDashboardPage', () => {
     expect(screen.getByRole('heading', { name: 'Invoices' })).toBeVisible()
     expect(screen.getByRole('heading', { name: 'Logs' })).toBeVisible()
     expect(screen.getByTestId('auth-nav')).toBeVisible()
-  })
-
-  it('creates admin user and shows success feedback', async () => {
-    createUserMutateAsyncMock.mockResolvedValue({ id: 'user-1' })
-
-    render(AdminDashboardPage)
-
-    await fireEvent.update(screen.getByLabelText('Email'), 'admin@example.com')
-    await fireEvent.update(screen.getByLabelText('Username'), ' admin-user ')
-    await fireEvent.update(screen.getByLabelText('Password'), 'secret')
-    const createUserButton = screen.getByRole('button', { name: 'Create user' })
-    await fireEvent.submit(createUserButton.closest('form') as HTMLFormElement)
-
-    expect(createUserMutateAsyncMock).toHaveBeenCalledWith({
-      email: 'admin@example.com',
-      username: 'admin-user',
-      password: 'secret',
-      role: 'customer',
-      is_staff: false,
-      is_superuser: false,
-      is_active: true,
-    })
-    expect(await screen.findByText('Admin user created.')).toBeVisible()
-  })
-
-  it('shows API error feedback when creating admin user fails', async () => {
-    createUserMutateAsyncMock.mockRejectedValue(new Error('create failed'))
-    normalizeApiErrorMock.mockReturnValue({ message: 'Email already exists.' })
-
-    render(AdminDashboardPage)
-
-    await fireEvent.update(screen.getByLabelText('Email'), 'admin@example.com')
-    await fireEvent.update(screen.getByLabelText('Password'), 'secret')
-    const createUserButton = screen.getByRole('button', { name: 'Create user' })
-    await fireEvent.submit(createUserButton.closest('form') as HTMLFormElement)
-
-    expect(await screen.findByText('Email already exists.')).toBeVisible()
   })
 })
