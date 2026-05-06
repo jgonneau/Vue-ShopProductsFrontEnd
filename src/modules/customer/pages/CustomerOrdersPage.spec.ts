@@ -153,7 +153,7 @@ describe('CustomerOrdersPage', () => {
 
     await fireEvent.update(screen.getByLabelText('Order reference'), ' ORD-2026-001 ')
     await fireEvent.update(screen.getByLabelText('Store'), 'store-1')
-    await fireEvent.update(screen.getByLabelText('Products (multiple)'), ['product-1'])
+    await fireEvent.update(screen.getByLabelText('Products (multiple)'), 'product-1')
     await fireEvent.click(screen.getByRole('button', { name: 'Create order' }))
 
     expect(mutateAsyncMock).toHaveBeenCalledWith({
@@ -172,7 +172,7 @@ describe('CustomerOrdersPage', () => {
 
     await fireEvent.update(screen.getByLabelText('Order reference'), 'ORD-2026-777')
     await fireEvent.update(screen.getByLabelText('Store'), 'store-1')
-    await fireEvent.update(screen.getByLabelText('Products (multiple)'), ['product-1'])
+    await fireEvent.update(screen.getByLabelText('Products (multiple)'), 'product-1')
     await fireEvent.click(screen.getByRole('button', { name: 'Create order' }))
 
     expect(mutateAsyncMock).toHaveBeenCalledWith({
@@ -190,7 +190,7 @@ describe('CustomerOrdersPage', () => {
 
     await fireEvent.update(screen.getByLabelText('Order reference'), 'ORD-2')
     await fireEvent.update(screen.getByLabelText('Store'), 'store-1')
-    await fireEvent.update(screen.getByLabelText('Products (multiple)'), ['product-1'])
+    await fireEvent.update(screen.getByLabelText('Products (multiple)'), 'product-1')
     await fireEvent.click(screen.getByRole('button', { name: 'Create order' }))
 
     expect(screen.getByText('API error')).toBeVisible()

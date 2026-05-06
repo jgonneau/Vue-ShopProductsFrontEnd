@@ -26,7 +26,10 @@ describe('useCreateOrder', () => {
     })
     useMutationMock.mockImplementation((options) => options)
 
-    const options = useCreateOrder()
+    const options = useCreateOrder() as unknown as {
+      mutationFn: unknown
+      onSuccess: () => Promise<void>
+    }
 
     expect(options.mutationFn).toBe(createOrderMock)
     await options.onSuccess()

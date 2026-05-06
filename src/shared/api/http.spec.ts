@@ -77,7 +77,7 @@ describe('http client auth interceptors', () => {
     const requestInterceptor = requestInterceptorRef.current
     expect(requestInterceptor).toBeTypeOf('function')
 
-    const requestConfig = {
+    const requestConfig: { headers: Record<string, string> } = {
       headers: {},
     }
     requestInterceptor?.(requestConfig)

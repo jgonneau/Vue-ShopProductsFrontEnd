@@ -20,7 +20,11 @@ describe('useMyInvoices', () => {
     useQueryMock.mockImplementation((options) => options)
 
     const page = ref(2)
-    const options = useMyInvoices(page)
+    const options = useMyInvoices(page) as unknown as {
+      queryKey: { value: unknown[] }
+      queryFn: () => Promise<unknown>
+      placeholderData: (previousData: unknown) => unknown
+    }
 
     expect(options.queryKey.value).toEqual(['customer-invoices', 2])
     await options.queryFn()

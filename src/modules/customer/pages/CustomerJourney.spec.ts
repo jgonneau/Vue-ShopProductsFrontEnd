@@ -202,7 +202,7 @@ describe('Customer journey', () => {
     expect(screen.getByText('My Orders')).toBeVisible()
     await fireEvent.update(screen.getByLabelText('Order reference'), 'ORD-2026-900')
     await fireEvent.update(screen.getByLabelText('Store'), 'store-1')
-    await fireEvent.update(screen.getByLabelText('Products (multiple)'), ['product-1'])
+    await fireEvent.update(screen.getByLabelText('Products (multiple)'), 'product-1')
     await fireEvent.click(screen.getByRole('button', { name: 'Create order' }))
     expect(mutateAsyncMock).toHaveBeenCalledWith({
       reference: 'ORD-2026-900',
