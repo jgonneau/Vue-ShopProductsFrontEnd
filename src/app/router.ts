@@ -10,6 +10,9 @@ import RegisterPage from '../modules/auth/pages/RegisterPage.vue'
 import ProfilePage from '../modules/auth/pages/ProfilePage.vue'
 import AdminDashboardPage from '../modules/auth/pages/AdminDashboardPage.vue'
 import VendorDashboardPage from '../modules/auth/pages/VendorDashboardPage.vue'
+import CustomerOrdersPage from '../modules/customer/pages/CustomerOrdersPage.vue'
+import CustomerInvoicesPage from '../modules/customer/pages/CustomerInvoicesPage.vue'
+import AccountSecurityPage from '../modules/customer/pages/AccountSecurityPage.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -59,6 +62,30 @@ export const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfilePage,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/account/orders',
+      name: 'customer-orders',
+      component: CustomerOrdersPage,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/account/invoices',
+      name: 'customer-invoices',
+      component: CustomerInvoicesPage,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/account/security',
+      name: 'account-security',
+      component: AccountSecurityPage,
       meta: {
         requiresAuth: true,
       },
