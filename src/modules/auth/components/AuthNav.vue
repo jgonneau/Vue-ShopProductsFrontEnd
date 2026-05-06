@@ -22,6 +22,9 @@ const handleLogout = async () => {
 
     <template v-if="auth.isAuthenticated">
       <RouterLink to="/profile">Profile</RouterLink>
+      <RouterLink to="/account/orders">My Orders</RouterLink>
+      <RouterLink to="/account/invoices">My Invoices</RouterLink>
+      <RouterLink to="/account/security">Security</RouterLink>
       <RouterLink v-if="role === 'admin'" to="/admin">Admin</RouterLink>
       <RouterLink v-if="role === 'vendor' || role === 'admin'" to="/vendor">Vendor</RouterLink>
       <button type="button" @click="handleLogout">Logout</button>

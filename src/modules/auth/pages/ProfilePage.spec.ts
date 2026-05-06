@@ -7,6 +7,14 @@ const { updateProfileMock, useAuthStoreMock } = vi.hoisted(() => ({
   useAuthStoreMock: vi.fn(),
 }))
 
+vi.mock('vue-router', () => ({
+  RouterLink: {
+    name: 'RouterLink',
+    props: ['to'],
+    template: '<a><slot /></a>',
+  },
+}))
+
 vi.mock('../stores/auth-store', () => ({
   useAuthStore: useAuthStoreMock,
 }))

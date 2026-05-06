@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
+import { RouterLink } from 'vue-router'
 import AuthNav from '../components/AuthNav.vue'
 import { useAuthStore } from '../stores/auth-store'
 
@@ -66,5 +67,15 @@ const onSubmit = async () => {
         {{ isSubmitting ? 'Saving...' : 'Save profile' }}
       </button>
     </form>
+
+    <section class="panel">
+      <h2>Account area</h2>
+      <p>Manage your customer workflows:</p>
+      <p>
+        <RouterLink to="/account/orders">My Orders</RouterLink> |
+        <RouterLink to="/account/invoices">My Invoices</RouterLink> |
+        <RouterLink to="/account/security">Account Security</RouterLink>
+      </p>
+    </section>
   </main>
 </template>
