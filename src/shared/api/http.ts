@@ -6,7 +6,9 @@ import {
   setAccessToken,
 } from '../../modules/auth/services/token-storage'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
+const resolvedApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim()
+const hasAbsoluteApiBaseUrl = Boolean(resolvedApiBaseUrl && /^https?:\/\//.test(resolvedApiBaseUrl))
+const API_BASE_URL = hasAbsoluteApiBaseUrl ? resolvedApiBaseUrl : 'http://localhost:8000'
 
 export const httpClient = axios.create({
   baseURL: API_BASE_URL,
