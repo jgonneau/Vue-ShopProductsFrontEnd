@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { normalizeApiError } from '../../../shared/api/errors'
 import PaginationControls from '../../../shared/ui/PaginationControls.vue'
 import { useToastBus } from '../../../shared/ui/toast-bus'
-import AuthNav from '../components/AuthNav.vue'
+import ShopProductsHeader from '../../shop-products/components/ShopProductsHeader.vue'
 import { useCreateProductForStore } from '../../vendor/composables/useCreateProductForStore'
 import { useOwnedProducts, useOwnedStoreProducts } from '../../vendor/composables/useOwnedProducts'
 import { useCreateOwnedStore, useOwnedStores } from '../../vendor/composables/useOwnedStores'
@@ -156,7 +156,7 @@ const onCreateProduct = async () => {
 
 <template>
   <main class="container">
-    <AuthNav />
+    <ShopProductsHeader />
     <h1>Vendor Dashboard</h1>
     <p>Manage your stores and products from one place.</p>
 

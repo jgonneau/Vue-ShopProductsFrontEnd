@@ -1,21 +1,27 @@
 import { computed, ref } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/vue'
+import { RouterLinkStub } from '@/test-utils/router-link-stub'
 import VendorDashboardPage from './VendorDashboardPage.vue'
 
-vi.mock('vue-router', () => ({
-  useRoute: () => ({
-    query: {},
-  }),
-  useRouter: () => ({
-    replace: vi.fn(),
-  }),
-}))
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('vue-router')>()
+  return {
+    ...actual,
+    RouterLink: RouterLinkStub,
+    useRoute: () => ({
+      query: {},
+    }),
+    useRouter: () => ({
+      replace: vi.fn(),
+    }),
+  }
+})
 
-vi.mock('../components/AuthNav.vue', () => ({
+vi.mock('../../shop-products/components/ShopProductsHeader.vue', () => ({
   default: {
-    name: 'AuthNav',
-    template: '<nav data-testid="auth-nav" />',
+    name: 'ShopProductsHeader',
+    template: '<header data-testid="shop-products-header" />',
   },
 }))
 
@@ -86,10 +92,12 @@ describe('VendorDashboardPage', () => {
   it('renders vendor dashboard sections', () => {
     render(VendorDashboardPage)
 
-    expect(screen.getByRole('heading', { name: 'Vendor Dashboard' })).toBeVisible()
-    expect(screen.getByRole('heading', { name: 'Create store' })).toBeVisible()
-    expect(screen.getByRole('heading', { name: 'Owned stores' })).toBeVisible()
-    expect(screen.getByRole('heading', { name: 'Add product to selected store' })).toBeVisible()
-    expect(screen.getByTestId('auth-nav')).toBeVisible()
+    expect(screen.getByRole('heading', { name: 'Vendor Dashboard' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Create store' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Owned stores' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Add product to selected store' }),
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('shop-products-header')).toBeInTheDocument()
   })
 })
