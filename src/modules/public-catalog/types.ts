@@ -5,6 +5,9 @@ export type PublicProduct = {
   description: string
   price: string
   in_stock: boolean
+  /** Store UUID when returned by the API */
+  store?: string
+  image?: string
   store_name: string
 }
 
