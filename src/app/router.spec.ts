@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { RouterLinkStub } from '@/test-utils/router-link-stub'
 
 type AuthStoreLike = {
   initializeSession: () => Promise<void>
@@ -6,7 +7,13 @@ type AuthStoreLike = {
   userRole: 'admin' | 'vendor' | 'customer' | 'guest' | null
 }
 
-type RouterGuard = (to: { meta: Record<string, unknown>; fullPath: string }) => Promise<unknown>
+type RouterGuardTarget = {
+  name?: string
+  meta: Record<string, unknown>
+  fullPath: string
+}
+
+type RouterGuard = (to: RouterGuardTarget) => Promise<unknown>
 
 const { createRouterMock, createWebHistoryMock, useAuthStoreMock, guardRef } = vi.hoisted(() => ({
   createRouterMock: vi.fn(),
@@ -19,10 +26,15 @@ const { createRouterMock, createWebHistoryMock, useAuthStoreMock, guardRef } = v
   },
 }))
 
-vi.mock('vue-router', () => ({
-  createRouter: createRouterMock,
-  createWebHistory: createWebHistoryMock,
-}))
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('vue-router')>()
+  return {
+    ...actual,
+    RouterLink: RouterLinkStub,
+    createRouter: createRouterMock,
+    createWebHistory: createWebHistoryMock,
+  }
+})
 
 vi.mock('../modules/auth/stores/auth-store', () => ({
   useAuthStore: useAuthStoreMock,
@@ -35,9 +47,7 @@ const loadRouterGuard = async (authStore: AuthStoreLike): Promise<RouterGuard> =
   guardRef.current = undefined
   useAuthStoreMock.mockReturnValue(authStore)
   createRouterMock.mockReturnValue({
-    beforeEach: (
-      guard: (to: { meta: Record<string, unknown>; fullPath: string }) => Promise<unknown>,
-    ) => {
+    beforeEach: (guard: (to: RouterGuardTarget) => Promise<unknown>) => {
       guardRef.current = guard
     },
   })
@@ -103,6 +113,26 @@ describe('router navigation guard', () => {
     expect(authStore.initializeSession).toHaveBeenCalledTimes(1)
     expect(result).toEqual({
       name: 'home',
+    })
+  })
+
+  it('redirects authenticated users from home to products', async () => {
+    const authStore = createAuthStore({
+      isAuthenticated: true,
+      userRole: 'customer',
+    })
+    const guard = await loadRouterGuard(authStore)
+    expect(guard).toBeTypeOf('function')
+
+    const result = await guard({
+      name: 'home',
+      meta: {},
+      fullPath: '/',
+    })
+
+    expect(authStore.initializeSession).toHaveBeenCalledTimes(1)
+    expect(result).toEqual({
+      name: 'products',
     })
   })
 })

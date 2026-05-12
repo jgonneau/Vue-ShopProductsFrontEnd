@@ -2,6 +2,13 @@ import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import App from './App.vue'
 
+vi.mock('./modules/shop-products/components/CartSheet.vue', () => ({
+  default: {
+    name: 'ShopProductsCartSheet',
+    template: '<div data-testid="test-cart-sheet-stub" />',
+  },
+}))
+
 vi.mock('./shared/ui/GlobalToasts.vue', () => ({
   default: {
     name: 'GlobalToasts',

@@ -7,12 +7,12 @@ export const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../modules/public-catalog/pages/HomePage.vue'),
+      component: () => import('../modules/shop-products/pages/ShopProductsHomePage.vue'),
     },
     {
       path: '/products',
       name: 'products',
-      component: () => import('../modules/public-catalog/pages/ProductListPage.vue'),
+      component: () => import('../modules/shop-products/pages/ShopProductsShopPage.vue'),
     },
     {
       path: '/products/:id',
@@ -56,7 +56,15 @@ export const router = createRouter({
     {
       path: '/account/orders',
       name: 'customer-orders',
-      component: () => import('../modules/customer/pages/CustomerOrdersPage.vue'),
+      component: () => import('../modules/shop-products/pages/ShopProductsOrdersPage.vue'),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/account/orders/:orderId',
+      name: 'customer-order-detail',
+      component: () => import('../modules/shop-products/pages/ShopProductsOrderDetailPage.vue'),
       meta: {
         requiresAuth: true,
       },
@@ -80,7 +88,7 @@ export const router = createRouter({
     {
       path: '/admin',
       name: 'admin-dashboard',
-      component: () => import('../modules/auth/pages/AdminDashboardPage.vue'),
+      component: () => import('../modules/shop-products/pages/ShopProductsAdminPage.vue'),
       meta: {
         requiresAuth: true,
         roles: ['admin'],
@@ -102,8 +110,12 @@ router.beforeEach(async (to) => {
   const auth = useAuthStore()
   await auth.initializeSession()
 
+  if (to.name === 'home' && auth.isAuthenticated) {
+    return { name: 'products' }
+  }
+
   if (to.meta.guestOnly && auth.isAuthenticated) {
-    return { name: 'profile' }
+    return { name: 'customer-orders' }
   }
 
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
