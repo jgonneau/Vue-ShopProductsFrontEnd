@@ -1,10 +1,7 @@
 name: Frontend E2E
 
 on:
-  push:
-    branches: [main, dev]
-  pull_request:
-    branches: [main, dev]
+  workflow_dispatch:
 
 jobs:
   cypress-e2e:
@@ -25,9 +22,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Cache Cypress binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            cypress-${{ runner.os }}-
+
+      - name: Install Cypress binary
+        run: npx cypress install
+
       - name: Run Cypress E2E
         uses: cypress-io/github-action@v6
         with:
           install: false
-          start: npm run dev
+          start: npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
           command: npm run e2e
