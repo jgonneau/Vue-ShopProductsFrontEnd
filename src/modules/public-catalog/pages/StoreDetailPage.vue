@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import AuthNav from '../../auth/components/AuthNav.vue'
+import ShopProductsHeader from '../../shop-products/components/ShopProductsHeader.vue'
 import { usePublicStoreDetail } from '../composables/usePublicStoreDetail'
 
 const route = useRoute()
@@ -11,7 +11,7 @@ const storeQuery = usePublicStoreDetail(storeId)
 
 <template>
   <main class="container">
-    <AuthNav />
+    <ShopProductsHeader />
     <RouterLink :to="{ name: 'stores' }">Back to stores</RouterLink>
 
     <section class="panel">
