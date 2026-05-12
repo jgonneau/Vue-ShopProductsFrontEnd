@@ -24,10 +24,10 @@ vi.mock('../composables/usePublicStores', () => ({
   usePublicStores: usePublicStoresMock,
 }))
 
-vi.mock('../../auth/components/AuthNav.vue', () => ({
+vi.mock('../../shop-products/components/ShopProductsHeader.vue', () => ({
   default: {
-    name: 'AuthNav',
-    template: '<nav data-testid="auth-nav" />',
+    name: 'ShopProductsHeader',
+    template: '<header data-testid="shop-products-header" />',
   },
 }))
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import AuthNav from '../../auth/components/AuthNav.vue'
+import ShopProductsHeader from '../../shop-products/components/ShopProductsHeader.vue'
 import PaginationControls from '../../../shared/ui/PaginationControls.vue'
 import { usePublicStores } from '../composables/usePublicStores'
 
@@ -53,7 +53,7 @@ const goToPage = async (nextPage: number) => {
 
 <template>
   <main class="container">
-    <AuthNav />
+    <ShopProductsHeader />
     <h1>Stores</h1>
     <p>Discover stores available in the public catalog.</p>
 
