@@ -12,7 +12,7 @@ const storeQuery = usePublicStoreDetail(storeId)
 <template>
   <main class="container">
     <ShopProductsHeader />
-    <RouterLink :to="{ name: 'stores' }">Back to stores</RouterLink>
+    <RouterLink :to="{ name: 'stores' }">&larr; Back to stores</RouterLink>
 
     <section class="panel">
       <p v-if="storeQuery.isPending.value">Loading store details...</p>

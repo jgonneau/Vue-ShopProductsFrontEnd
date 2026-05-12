@@ -85,7 +85,7 @@ describe('StoreDetailPage', () => {
     expect(screen.getByText(/Phone:/)).toBeVisible()
     expect(screen.getByText(/Address:/)).toBeVisible()
     expect(screen.getByText(/Paris, Ile-de-France 75001, France/)).toBeVisible()
-    expect(screen.getByText('Back to stores')).toHaveAttribute(
+    expect(screen.getByText(/Back to stores/)).toHaveAttribute(
       'data-to',
       JSON.stringify({ name: 'stores' }),
     )

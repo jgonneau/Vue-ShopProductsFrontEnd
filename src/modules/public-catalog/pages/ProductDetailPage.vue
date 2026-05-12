@@ -23,7 +23,7 @@ const productImage = computed(
 
     <section class="container sp-product-detail">
       <RouterLink :to="{ name: 'products' }" class="sp-link sp-product-detail-back">
-        Back to products
+        &larr; Back to products
       </RouterLink>
 
       <p v-if="productQuery.isPending.value">Loading product details...</p>

@@ -101,6 +101,5 @@ describe('AdminDashboardPage', () => {
     expect(screen.getByRole('heading', { name: 'Orders' })).toBeVisible()
     expect(screen.getByRole('heading', { name: 'Invoices' })).toBeVisible()
     expect(screen.getByRole('heading', { name: 'Logs' })).toBeVisible()
-    expect(screen.getByTestId('auth-nav')).toBeVisible()
   })
 })

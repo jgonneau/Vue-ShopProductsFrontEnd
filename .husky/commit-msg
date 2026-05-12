@@ -2,7 +2,7 @@
 
 COMMIT_MSG_FILE="$1"
 COMMIT_MSG="$(sed -n '1p' "$COMMIT_MSG_FILE")"
-COMMIT_REGEX='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._/-]+\))?(!)?: .+$'
+COMMIT_REGEX='^(feature|fixture|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._/-]+\))?(!)?: .+$'
 
 if ! echo "$COMMIT_MSG" | grep -Eq "$COMMIT_REGEX"; then
   echo "Invalid commit message: '$COMMIT_MSG'"
