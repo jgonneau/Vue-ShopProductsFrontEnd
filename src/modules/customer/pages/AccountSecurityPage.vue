@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import AuthNav from '../../auth/components/AuthNav.vue'
+import ShopProductsFooter from '../../shop-products/components/ShopProductsFooter.vue'
+import ShopProductsHeader from '../../shop-products/components/ShopProductsHeader.vue'
 import { useAuthStore } from '../../auth/stores/auth-store'
 import { normalizeApiError } from '../../../shared/api/errors'
 import { changePassword, deleteAccount } from '../services/customer-api'
@@ -77,58 +78,75 @@ const onDeleteAccount = async () => {
 </script>
 
 <template>
-  <main class="container">
-    <AuthNav />
-    <h1>Account Security</h1>
-    <p>Manage your password and account lifecycle.</p>
+  <div class="sp-page sp-page--orders">
+    <ShopProductsHeader />
 
-    <section class="panel">
-      <h2>Change password</h2>
-      <form class="form" @submit.prevent="onChangePassword">
-        <label>
-          Current password
-          <input v-model="passwordForm.oldPassword" type="password" required />
-        </label>
-        <label>
-          New password
-          <input v-model="passwordForm.newPassword" type="password" required />
-        </label>
-        <label>
-          Confirm new password
-          <input v-model="passwordForm.confirmPassword" type="password" required />
-        </label>
+    <main class="container sp-orders">
+      <section class="sp-orders-header">
+        <div>
+          <p class="sp-kicker">Your account</p>
+          <h1>Account Security</h1>
+          <p>Manage your password and account lifecycle.</p>
+        </div>
+        <div class="sp-stats">
+          <!-- -->
+        </div>
+      </section>
 
-        <p v-if="passwordErrorMessage" class="error">{{ passwordErrorMessage }}</p>
-        <p v-if="passwordSuccessMessage" class="success">{{ passwordSuccessMessage }}</p>
+      <section>
+        <h2>Change password</h2>
+        <form class="form sp-profile-form sp-security-form" @submit.prevent="onChangePassword">
+          <label>
+            Current password
+            <input v-model="passwordForm.oldPassword" type="password" required />
+          </label>
+          <label>
+            New password
+            <input v-model="passwordForm.newPassword" type="password" required />
+          </label>
+          <label>
+            Confirm new password
+            <input v-model="passwordForm.confirmPassword" type="password" required />
+          </label>
 
-        <button type="submit" :disabled="isChangingPassword">
-          {{ isChangingPassword ? 'Saving...' : 'Change password' }}
-        </button>
-      </form>
-    </section>
+          <p v-if="passwordErrorMessage" class="error">{{ passwordErrorMessage }}</p>
+          <p v-if="passwordSuccessMessage" class="success">{{ passwordSuccessMessage }}</p>
 
-    <section class="panel danger-panel">
-      <h2>Delete account</h2>
-      <p>
-        This action is permanent. To confirm, type <code>DELETE</code> and enter your current
-        password.
-      </p>
-      <form class="form" @submit.prevent="onDeleteAccount">
-        <label>
-          Current password
-          <input v-model="deleteForm.password" type="password" required />
-        </label>
-        <label>
-          Confirmation text
-          <input v-model="deleteForm.confirmationText" type="text" placeholder="DELETE" required />
-        </label>
+          <button type="submit" :disabled="isChangingPassword">
+            {{ isChangingPassword ? 'Saving...' : 'Change password' }}
+          </button>
+        </form>
+      </section>
 
-        <p v-if="deleteErrorMessage" class="error">{{ deleteErrorMessage }}</p>
+      <section>
+        <h2>Delete account</h2>
+        <p>
+          This action is permanent. Type <code>DELETE</code> and enter your password to confirm.
+        </p>
+        <form class="form sp-profile-form sp-security-form" @submit.prevent="onDeleteAccount">
+          <label>
+            Current password
+            <input v-model="deleteForm.password" type="password" required />
+          </label>
+          <label>
+            Confirmation text
+            <input
+              v-model="deleteForm.confirmationText"
+              type="text"
+              placeholder="DELETE"
+              required
+            />
+          </label>
 
-        <button type="submit" :disabled="isDeleting">
-          {{ isDeleting ? 'Deleting...' : 'Delete my account' }}
-        </button>
-      </form>
-    </section>
-  </main>
+          <p v-if="deleteErrorMessage" class="error">{{ deleteErrorMessage }}</p>
+
+          <button type="submit" :disabled="isDeleting">
+            {{ isDeleting ? 'Deleting...' : 'Delete my account' }}
+          </button>
+        </form>
+      </section>
+    </main>
+
+    <ShopProductsFooter />
+  </div>
 </template>

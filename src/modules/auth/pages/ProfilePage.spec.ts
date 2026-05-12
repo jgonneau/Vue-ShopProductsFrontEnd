@@ -1,34 +1,39 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
+import { RouterLinkStub } from '@/test-utils/router-link-stub'
 import ProfilePage from './ProfilePage.vue'
 
-const { updateProfileMock, useAuthStoreMock } = vi.hoisted(() => ({
+const { updateProfileMock, useAuthStoreMock, useRouterMock, pushMock } = vi.hoisted(() => ({
   updateProfileMock: vi.fn(),
   useAuthStoreMock: vi.fn(),
+  useRouterMock: vi.fn(),
+  pushMock: vi.fn(),
 }))
 
-vi.mock('vue-router', () => ({
-  RouterLink: {
-    name: 'RouterLink',
-    props: ['to'],
-    template: '<a><slot /></a>',
-  },
-}))
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('vue-router')>()
+  return {
+    ...actual,
+    RouterLink: RouterLinkStub,
+    useRouter: useRouterMock,
+  }
+})
 
 vi.mock('../stores/auth-store', () => ({
   useAuthStore: useAuthStoreMock,
 }))
 
-vi.mock('../components/AuthNav.vue', () => ({
+vi.mock('../../shop-products/components/ShopProductsHeader.vue', () => ({
   default: {
-    name: 'AuthNav',
-    template: '<nav data-testid="auth-nav" />',
+    name: 'ShopProductsHeader',
+    template: '<header data-testid="shop-products-header" />',
   },
 }))
 
 describe('ProfilePage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    useRouterMock.mockReturnValue({ push: pushMock })
   })
 
   it('renders current user details and pre-fills username', () => {
