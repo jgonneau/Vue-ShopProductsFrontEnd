@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import AuthNav from '../../auth/components/AuthNav.vue'
+import ShopProductsHeader from '../../shop-products/components/ShopProductsHeader.vue'
 import { usePublicStores } from '../../public-catalog/composables/usePublicStores'
 import { normalizeApiError } from '../../../shared/api/errors'
 import PaginationControls from '../../../shared/ui/PaginationControls.vue'
@@ -98,7 +98,7 @@ const setQueryPage = async (key: 'ordersPage' | 'storesPage' | 'productsPage', p
 
 <template>
   <main class="container">
-    <AuthNav />
+    <ShopProductsHeader />
     <h1>My Orders</h1>
     <p>Review your orders and create a new one from public store products.</p>
 
