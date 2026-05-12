@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { ref } from 'vue'
+import { RouterLinkStub } from '@/test-utils/router-link-stub'
 import CustomerInvoicesPage from './CustomerInvoicesPage.vue'
 
 const { useRouteMock, useRouterMock, replaceMock, useMyInvoicesMock } = vi.hoisted(() => ({
@@ -10,19 +11,24 @@ const { useRouteMock, useRouterMock, replaceMock, useMyInvoicesMock } = vi.hoist
   useMyInvoicesMock: vi.fn(),
 }))
 
-vi.mock('vue-router', () => ({
-  useRoute: useRouteMock,
-  useRouter: useRouterMock,
-}))
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('vue-router')>()
+  return {
+    ...actual,
+    RouterLink: RouterLinkStub,
+    useRoute: useRouteMock,
+    useRouter: useRouterMock,
+  }
+})
 
 vi.mock('../composables/useMyInvoices', () => ({
   useMyInvoices: useMyInvoicesMock,
 }))
 
-vi.mock('../../auth/components/AuthNav.vue', () => ({
+vi.mock('../../shop-products/components/ShopProductsHeader.vue', () => ({
   default: {
-    name: 'AuthNav',
-    template: '<nav data-testid="auth-nav" />',
+    name: 'ShopProductsHeader',
+    template: '<header data-testid="shop-products-header" />',
   },
 }))
 
