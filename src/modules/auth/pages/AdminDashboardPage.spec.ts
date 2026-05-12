@@ -1,21 +1,27 @@
 import { ref } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/vue'
+import { RouterLinkStub } from '@/test-utils/router-link-stub'
 import AdminDashboardPage from './AdminDashboardPage.vue'
 
-vi.mock('vue-router', () => ({
-  useRoute: () => ({
-    query: {},
-  }),
-  useRouter: () => ({
-    replace: vi.fn(),
-  }),
-}))
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('vue-router')>()
+  return {
+    ...actual,
+    RouterLink: RouterLinkStub,
+    useRoute: () => ({
+      query: {},
+    }),
+    useRouter: () => ({
+      replace: vi.fn(),
+    }),
+  }
+})
 
-vi.mock('../components/AuthNav.vue', () => ({
+vi.mock('../../shop-products/components/ShopProductsHeader.vue', () => ({
   default: {
-    name: 'AuthNav',
-    template: '<nav data-testid="auth-nav" />',
+    name: 'ShopProductsHeader',
+    template: '<header data-testid="shop-products-header" />',
   },
 }))
 
