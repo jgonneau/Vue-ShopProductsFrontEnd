@@ -11,6 +11,7 @@ import {
   verifyAccessToken,
 } from '../services/auth-api'
 import { clearAuthTokens, getAccessToken, setAccessToken } from '../services/token-storage'
+import { useCart } from '@/modules/shop-products/composables/useCart'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserProfile | null>(null)
@@ -30,6 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = async () => {
     try {
       await logoutUser()
+      useCart().clearCart()
     } finally {
       clearSession()
     }

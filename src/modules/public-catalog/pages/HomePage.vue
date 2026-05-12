@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import AuthNav from '../../auth/components/AuthNav.vue'
 import { useAuthStore } from '../../auth/stores/auth-store'
 import { useApiSchema } from '../composables/useApiSchema'
 import { usePublicProducts } from '../composables/usePublicProducts'
@@ -21,22 +20,50 @@ const featuredStores = computed(() => (featuredStoresQuery.data.value?.results ?
 </script>
 
 <template>
-  <main class="container">
-    <AuthNav />
-    <h1>Shop Products Frontend</h1>
-    <p>Discover featured products and stores from the public catalog.</p>
+  <main class="shop-home">
+    <header class="shop-navbar container">
+      <RouterLink :to="{ name: 'home' }" class="shop-brand">Shop Products</RouterLink>
+      <nav class="shop-links">
+        <RouterLink :to="{ name: 'products' }">Products</RouterLink>
+        <RouterLink :to="{ name: 'stores' }">Stores</RouterLink>
+      </nav>
+      <div class="shop-auth-actions">
+        <RouterLink :to="{ name: 'login' }" class="shop-btn shop-btn--ghost">Login</RouterLink>
+        <RouterLink :to="{ name: 'register' }" class="shop-btn">Register</RouterLink>
+      </div>
+    </header>
 
-    <section v-if="auth.isAuthenticated" class="panel">
-      <p>
-        Signed in as <strong>{{ auth.user?.email }}</strong> (role: <code>{{ auth.userRole }}</code
-        >)
-      </p>
-    </section>
-    <section v-else class="panel">
-      <p>You are currently browsing as a guest.</p>
+    <section class="shop-hero container">
+      <div>
+        <p class="shop-eyebrow">Curated for smart shoppers</p>
+        <h1>Discover trending products from trusted stores</h1>
+        <p class="shop-hero-copy">
+          Explore fresh arrivals, compare featured shops, and buy with confidence.
+        </p>
+        <div class="shop-hero-actions">
+          <RouterLink :to="{ name: 'products' }" class="shop-btn">Start shopping</RouterLink>
+          <RouterLink :to="{ name: 'stores' }" class="shop-btn shop-btn--ghost">
+            Explore stores
+          </RouterLink>
+        </div>
+        <p v-if="auth.isAuthenticated" class="shop-welcome">
+          Welcome back, <strong>{{ auth.user?.email }}</strong
+          >!
+        </p>
+      </div>
+      <div class="shop-hero-card">
+        <p v-if="schemaQuery.isPending.value">Checking backend health...</p>
+        <p v-else-if="schemaQuery.isError.value" class="error">Backend status unavailable.</p>
+        <template v-else>
+          <p class="shop-eyebrow">Platform status</p>
+          <h2>{{ schemaTitle }}</h2>
+          <p>Schema version {{ schemaVersion }}</p>
+          <p>{{ schemaQuery.data.value?.keys.length }} top-level schema keys loaded.</p>
+        </template>
+      </div>
     </section>
 
-    <section class="panel">
+    <section class="container shop-section">
       <div class="panel-header">
         <h2>Featured products</h2>
         <RouterLink :to="{ name: 'products' }">View all products</RouterLink>
@@ -45,21 +72,26 @@ const featuredStores = computed(() => (featuredStoresQuery.data.value?.results ?
       <p v-else-if="featuredProductsQuery.isError.value" class="error">
         Unable to load featured products.
       </p>
-      <ul v-else-if="featuredProducts.length > 0" class="catalog-grid">
-        <li v-for="product in featuredProducts" :key="product.id" class="catalog-card">
+      <ul v-else-if="featuredProducts.length > 0" class="catalog-grid shop-featured-grid">
+        <li
+          v-for="(product, index) in featuredProducts"
+          :key="product.id"
+          class="catalog-card shop-featured-card"
+          :style="{ animationDelay: `${index * 120}ms` }"
+        >
+          <p class="shop-eyebrow">{{ product.store_name }}</p>
           <h3>{{ product.title }}</h3>
           <p>{{ product.description }}</p>
-          <p><strong>Store:</strong> {{ product.store_name }}</p>
           <p><strong>Price:</strong> ${{ product.price }}</p>
-          <RouterLink :to="{ name: 'product-detail', params: { id: product.id } }"
-            >View details</RouterLink
-          >
+          <RouterLink :to="{ name: 'product-detail', params: { id: product.id } }">
+            View details
+          </RouterLink>
         </li>
       </ul>
       <p v-else>No featured products available yet.</p>
     </section>
 
-    <section class="panel">
+    <section class="container shop-section">
       <div class="panel-header">
         <h2>Featured stores</h2>
         <RouterLink :to="{ name: 'stores' }">View all stores</RouterLink>
@@ -81,17 +113,8 @@ const featuredStores = computed(() => (featuredStoresQuery.data.value?.results ?
       <p v-else>No featured stores available yet.</p>
     </section>
 
-    <section class="panel">
-      <h2>Backend connectivity check</h2>
-      <p v-if="schemaQuery.isPending.value">Checking `/api/schema/`...</p>
-      <p v-else-if="schemaQuery.isError.value" class="error">
-        Unable to reach backend schema endpoint.
-      </p>
-      <div v-else class="success">
-        <p><strong>Schema title:</strong> {{ schemaTitle }}</p>
-        <p><strong>Schema version:</strong> {{ schemaVersion }}</p>
-        <p><strong>Top-level keys:</strong> {{ schemaQuery.data.value?.keys.length }}</p>
-      </div>
-    </section>
+    <footer class="shop-footer">
+      <p>Shop Products</p>
+    </footer>
   </main>
 </template>
