@@ -1,4 +1,4 @@
-# Frontend DAE
+# ShopProducts (front-end)
 
 Frontend application built with Vue 3 + TypeScript + Vite for catalog browsing, authentication, and role-based dashboards (customer, vendor, admin).
 
