@@ -12,6 +12,7 @@ const {
   updateCurrentUserMock,
   verifyAccessTokenMock,
   clearAuthTokensMock,
+  clearCartMock,
   getAccessTokenMock,
   setAccessTokenMock,
 } = vi.hoisted(() => ({
@@ -23,6 +24,7 @@ const {
   updateCurrentUserMock: vi.fn(),
   verifyAccessTokenMock: vi.fn(),
   clearAuthTokensMock: vi.fn(),
+  clearCartMock: vi.fn(),
   getAccessTokenMock: vi.fn(),
   setAccessTokenMock: vi.fn(),
 }))
@@ -41,6 +43,12 @@ vi.mock('../services/token-storage', () => ({
   clearAuthTokens: clearAuthTokensMock,
   getAccessToken: getAccessTokenMock,
   setAccessToken: setAccessTokenMock,
+}))
+
+vi.mock('@/modules/shop-products/composables/useCart', () => ({
+  useCart: () => ({
+    clearCart: clearCartMock,
+  }),
 }))
 
 const buildUserProfile = (overrides: Partial<UserProfile> = {}): UserProfile => ({
@@ -164,6 +172,26 @@ describe('auth-store', () => {
     await expect(store.logout()).rejects.toThrow('logout failed')
 
     expect(logoutUserMock).toHaveBeenCalledTimes(1)
+    expect(clearCartMock).not.toHaveBeenCalled()
+    expect(clearAuthTokensMock).toHaveBeenCalledTimes(1)
+    expect(store.user).toBeNull()
+    expect(store.isAuthenticated).toBe(false)
+  })
+
+  it('clears cart when logout succeeds', async () => {
+    const store = useAuthStore()
+    loginUserMock.mockResolvedValue({ access: 'access-token', refresh: 'refresh-token' })
+    fetchCurrentUserMock.mockResolvedValue(buildUserProfile())
+    logoutUserMock.mockResolvedValue(undefined)
+
+    await store.login({
+      email: 'user@example.com',
+      password: 'secret',
+    })
+    await store.logout()
+
+    expect(logoutUserMock).toHaveBeenCalledTimes(1)
+    expect(clearCartMock).toHaveBeenCalledTimes(1)
     expect(clearAuthTokensMock).toHaveBeenCalledTimes(1)
     expect(store.user).toBeNull()
     expect(store.isAuthenticated).toBe(false)

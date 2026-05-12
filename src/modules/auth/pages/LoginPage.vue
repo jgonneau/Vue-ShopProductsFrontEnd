@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import AuthNav from '../components/AuthNav.vue'
+import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth-store'
 
-const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
@@ -26,9 +24,7 @@ const onSubmit = async () => {
       password: form.password,
     })
 
-    const redirectTarget =
-      typeof route.query.redirect === 'string' ? route.query.redirect : '/profile'
-    router.push(redirectTarget)
+    router.push({ name: 'products' })
   } catch {
     errorMessage.value = 'Invalid credentials. Please verify your email and password.'
   } finally {
@@ -38,27 +34,62 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <main class="container">
-    <AuthNav />
-    <h1>Login</h1>
-    <p>Use your API credentials to get a valid JWT session.</p>
+  <main class="sp-page login-shell">
+    <section class="login-hero" aria-hidden="true">
+      <img
+        src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1200&q=80"
+        alt=""
+      />
+      <div v-if="false" class="login-hero-overlay">
+        <h2></h2>
+        <p></p>
+      </div>
+    </section>
 
-    <form class="panel form" @submit.prevent="onSubmit">
-      <label>
-        Email
-        <input v-model="form.email" type="email" required autocomplete="email" />
-      </label>
+    <section class="login-pane">
+      <div class="login-card">
+        <RouterLink :to="{ name: 'home' }" class="sp-logo">ShopProducts</RouterLink>
+        <h1>Welcome back</h1>
+        <p class="login-subtitle">Enter your details to continue.</p>
 
-      <label>
-        Password
-        <input v-model="form.password" type="password" required autocomplete="current-password" />
-      </label>
+        <form class="form" @submit.prevent="onSubmit">
+          <label>
+            Email
+            <input
+              v-model="form.email"
+              type="email"
+              required
+              autocomplete="email"
+              placeholder="you@example.com"
+            />
+          </label>
 
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+          <label>
+            <span class="login-label-row">
+              <span>Password</span>
+              <button v-if="false" type="button" class="login-muted-action">Forgot?</button>
+            </span>
+            <input
+              v-model="form.password"
+              type="password"
+              required
+              autocomplete="current-password"
+              placeholder="••••••••"
+            />
+          </label>
 
-      <button type="submit" :disabled="isSubmitting">
-        {{ isSubmitting ? 'Signing in...' : 'Sign in' }}
-      </button>
-    </form>
+          <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+
+          <button type="submit" :disabled="isSubmitting">
+            {{ isSubmitting ? 'Just a moment…' : 'Sign in' }}
+          </button>
+        </form>
+
+        <p class="register-switch">
+          New here? Join us!
+          <RouterLink :to="{ name: 'register' }">Create an account</RouterLink>
+        </p>
+      </div>
+    </section>
   </main>
 </template>

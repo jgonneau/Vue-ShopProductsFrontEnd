@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
+import { RouterLinkStub } from '@/test-utils/router-link-stub'
 import RegisterPage from './RegisterPage.vue'
 
 const { useRouterMock, pushMock, registerMock, useAuthStoreMock } = vi.hoisted(() => ({
@@ -9,18 +10,23 @@ const { useRouterMock, pushMock, registerMock, useAuthStoreMock } = vi.hoisted((
   useAuthStoreMock: vi.fn(),
 }))
 
-vi.mock('vue-router', () => ({
-  useRouter: useRouterMock,
-}))
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('vue-router')>()
+  return {
+    ...actual,
+    RouterLink: RouterLinkStub,
+    useRouter: useRouterMock,
+  }
+})
 
 vi.mock('../stores/auth-store', () => ({
   useAuthStore: useAuthStoreMock,
 }))
 
-vi.mock('../components/AuthNav.vue', () => ({
+vi.mock('../../shop-products/components/ShopProductsHeader.vue', () => ({
   default: {
-    name: 'AuthNav',
-    template: '<nav data-testid="auth-nav" />',
+    name: 'ShopProductsHeader',
+    template: '<header data-testid="shop-products-header" />',
   },
 }))
 

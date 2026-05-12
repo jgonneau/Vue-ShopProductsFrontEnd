@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import AuthNav from '../components/AuthNav.vue'
+import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth-store'
 
 const router = useRouter()
@@ -45,42 +44,80 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <main class="container">
-    <AuthNav />
-    <h1>Register</h1>
-    <p>Create your account, then the app signs you in automatically.</p>
+  <main class="sp-page login-shell">
+    <section class="login-hero" aria-hidden="true">
+      <img
+        src="https://images.unsplash.com/photo-1615396899839-c99c121888b0?auto=format&fit=crop&w=1200&q=80"
+        alt=""
+      />
+      <div class="login-hero-overlay">
+        <h2></h2>
+        <p></p>
+      </div>
+    </section>
 
-    <form class="panel form" @submit.prevent="onSubmit">
-      <label>
-        Email
-        <input v-model="form.email" type="email" required autocomplete="email" />
-      </label>
+    <section class="login-pane">
+      <div class="login-card">
+        <RouterLink :to="{ name: 'home' }" class="sp-logo">ShopProducts</RouterLink>
+        <h1>Create account</h1>
+        <p class="login-subtitle">Join us — it only takes a moment.</p>
 
-      <label>
-        Username
-        <input v-model="form.username" type="text" autocomplete="username" />
-      </label>
+        <form class="form" @submit.prevent="onSubmit">
+          <label>
+            Email
+            <input
+              v-model="form.email"
+              type="email"
+              required
+              autocomplete="email"
+              placeholder="you@email.com"
+            />
+          </label>
 
-      <label>
-        Password
-        <input v-model="form.password" type="password" required autocomplete="new-password" />
-      </label>
+          <label>
+            Username
+            <input
+              v-model="form.username"
+              type="text"
+              autocomplete="username"
+              placeholder="Your name"
+            />
+          </label>
 
-      <label>
-        Confirm password
-        <input
-          v-model="form.passwordConfirm"
-          type="password"
-          required
-          autocomplete="new-password"
-        />
-      </label>
+          <label>
+            Password
+            <input
+              v-model="form.password"
+              type="password"
+              required
+              autocomplete="new-password"
+              placeholder="••••••••"
+            />
+          </label>
 
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+          <label>
+            Confirm password
+            <input
+              v-model="form.passwordConfirm"
+              type="password"
+              required
+              autocomplete="new-password"
+              placeholder="••••••••"
+            />
+          </label>
 
-      <button type="submit" :disabled="isSubmitting">
-        {{ isSubmitting ? 'Creating account...' : 'Create account' }}
-      </button>
-    </form>
+          <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+
+          <button type="submit" :disabled="isSubmitting">
+            {{ isSubmitting ? 'Creating account...' : 'Create account' }}
+          </button>
+        </form>
+
+        <p class="login-switch">
+          Already have an account?
+          <RouterLink :to="{ name: 'login' }">Sign in</RouterLink>
+        </p>
+      </div>
+    </section>
   </main>
 </template>

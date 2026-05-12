@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
+import { RouterLinkStub } from '@/test-utils/router-link-stub'
 import LoginPage from './LoginPage.vue'
 
 const { useRouteMock, useRouterMock, pushMock, loginMock, useAuthStoreMock } = vi.hoisted(() => ({
@@ -10,19 +11,24 @@ const { useRouteMock, useRouterMock, pushMock, loginMock, useAuthStoreMock } = v
   useAuthStoreMock: vi.fn(),
 }))
 
-vi.mock('vue-router', () => ({
-  useRoute: useRouteMock,
-  useRouter: useRouterMock,
-}))
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('vue-router')>()
+  return {
+    ...actual,
+    RouterLink: RouterLinkStub,
+    useRoute: useRouteMock,
+    useRouter: useRouterMock,
+  }
+})
 
 vi.mock('../stores/auth-store', () => ({
   useAuthStore: useAuthStoreMock,
 }))
 
-vi.mock('../components/AuthNav.vue', () => ({
+vi.mock('../../shop-products/components/ShopProductsHeader.vue', () => ({
   default: {
-    name: 'AuthNav',
-    template: '<nav data-testid="auth-nav" />',
+    name: 'ShopProductsHeader',
+    template: '<header data-testid="shop-products-header" />',
   },
 }))
 
@@ -34,7 +40,7 @@ describe('LoginPage', () => {
     useAuthStoreMock.mockReturnValue({ login: loginMock })
   })
 
-  it('submits credentials and redirects to requested path', async () => {
+  it('submits credentials and redirects to catalog', async () => {
     useRouteMock.mockReturnValue({
       query: {
         redirect: '/vendor',
@@ -51,17 +57,17 @@ describe('LoginPage', () => {
       email: 'user@example.com',
       password: 'secret',
     })
-    expect(pushMock).toHaveBeenCalledWith('/vendor')
+    expect(pushMock).toHaveBeenCalledWith({ name: 'products' })
   })
 
-  it('falls back to profile redirect after successful login', async () => {
+  it('always redirects to catalog even when no redirect query is set', async () => {
     render(LoginPage)
 
     await fireEvent.update(screen.getByLabelText('Email'), 'user@example.com')
     await fireEvent.update(screen.getByLabelText('Password'), 'secret')
     await fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
 
-    expect(pushMock).toHaveBeenCalledWith('/profile')
+    expect(pushMock).toHaveBeenCalledWith({ name: 'products' })
   })
 
   it('shows an error message when login fails', async () => {
