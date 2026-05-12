@@ -142,7 +142,7 @@ export const createAdminOrder = async (payload: {
   invoice?: string | null
   delivery_date?: string | null
 }) => {
-  const { data } = await httpClient.post('/api/admin/orders/', payload)
+  const { data } = await httpClient.post<AdminOrder>('/api/admin/orders/', payload)
   return data
 }
 
