@@ -20,6 +20,7 @@ AccountSecurityPage:
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import { ref } from 'vue'
+import { RouterLinkStub } from '@/test-utils/router-link-stub'
 import CustomerOrdersPage from './CustomerOrdersPage.vue'
 import CustomerInvoicesPage from './CustomerInvoicesPage.vue'
 import AccountSecurityPage from './AccountSecurityPage.vue'
@@ -58,10 +59,15 @@ const {
   routeQueryState: { current: {} as Record<string, string> },
 }))
 
-vi.mock('vue-router', () => ({
-  useRoute: useRouteMock,
-  useRouter: useRouterMock,
-}))
+vi.mock('vue-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('vue-router')>()
+  return {
+    ...actual,
+    RouterLink: RouterLinkStub,
+    useRoute: useRouteMock,
+    useRouter: useRouterMock,
+  }
+})
 
 vi.mock('../../public-catalog/composables/usePublicStores', () => ({
   usePublicStores: usePublicStoresMock,
@@ -96,10 +102,10 @@ vi.mock('../../../shared/api/errors', () => ({
   normalizeApiError: normalizeApiErrorMock,
 }))
 
-vi.mock('../../auth/components/AuthNav.vue', () => ({
+vi.mock('../../shop-products/components/ShopProductsHeader.vue', () => ({
   default: {
-    name: 'AuthNav',
-    template: '<nav data-testid="auth-nav" />',
+    name: 'ShopProductsHeader',
+    template: '<header data-testid="shop-products-header" />',
   },
 }))
 
