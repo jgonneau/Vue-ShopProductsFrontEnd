@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
-BRANCH_REGEX='^(feature|bugfix|hotfix|refactor|style|chore|docs|test|experiment|release)/[a-z0-9._-]+$'
+BRANCH_REGEX='^(feature|bugfix|hotfix|refactor|style|chore|ci|docs|test|experiment|release)/[a-z0-9._-]+$'
 
 if [ "$BRANCH_NAME" = "HEAD" ]; then
   echo "Skipping branch name validation in detached HEAD state."
@@ -11,7 +11,7 @@ elif ! echo "$BRANCH_NAME" | grep -Eq "$BRANCH_REGEX"; then
   echo "  <type>/<description>"
   echo ""
   echo "Allowed types:"
-  echo "  feature | bugfix | hotfix | refactor | style | chore | docs | test | experiment | release"
+  echo "  feature | bugfix | hotfix | refactor | style | chore | ci | docs | test | experiment | release"
   echo ""
   echo "Examples:"
   echo "  feature/add-cart-summary"
