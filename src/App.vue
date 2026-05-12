@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import CartSheet from './modules/shop-products/components/CartSheet.vue'
 import GlobalToasts from './shared/ui/GlobalToasts.vue'
 </script>
 
@@ -8,5 +9,6 @@ import GlobalToasts from './shared/ui/GlobalToasts.vue'
   <div id="app-content">
     <RouterView />
   </div>
+  <CartSheet />
   <GlobalToasts />
 </template>
